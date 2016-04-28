@@ -2,10 +2,10 @@
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script type="text/ng-template" id="categoryTree">
-        <span ng-if="!isTerminal && data.show" ng-click="data.show=false"  style="cursor:pointer"> (-) </span>
-        <span ng-if="!isTerminal && !data.show" ng-click="data.show=true"  style="cursor:pointer"> (+) </span>
-        {{ data.key }} <span ng-if="isTerminal"> : {{ data.val}}</span> 
-        <ul ng-if="!isTerminal && data.show">
+        <span ng-if="!checkTerminal(data.val) && data.show" ng-click="data.show=false"  style="cursor:pointer"> (-) </span>
+        <span ng-if="!checkTerminal(data.val) && !data.show" ng-click="data.show=true"  style="cursor:pointer"> (+) </span>
+        {{ data.key }} <span ng-if="checkTerminal(data.val)" ng-click="populate(data)" style="cursor:pointer"> : {{data.val}}</span> 
+        <ul ng-if="!checkTerminal(data.val) && data.show">
             <li ng-repeat="data in data.val" ng-include="'categoryTree'" onload="isTerminal=checkTerminal(data.val)">           
             </li>
         </ul>
@@ -14,6 +14,10 @@
       sample = null;
       var app = angular.module('firebaseApp', []);
       app.controller('ctrl', ['$scope', function($scope){
+        
+        $scope.populate = function(data){
+          data.val = [{key : "greeting", val : "Hello"}];
+        }
         
         $scope.checkTerminal = function(data){
           return (typeof(data) === 'string' || typeof(data) === 'number');
