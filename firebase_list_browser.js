@@ -3,7 +3,7 @@
 var app = angular.module('firebaseApp', []);
 app.controller('BrowserController', ['$scope', function($scope){
       // A $( document ).ready() block.
-      $scope.BASE_URL = "https://dev-preppo.firebaseio.com";
+      $scope.BASE_URL = "https://shining-inferno-4918.firebaseio.com";
       $scope.breadcrumbs = [{name : "ROOT", url : "/"}];
       $scope.notification = "None";
   

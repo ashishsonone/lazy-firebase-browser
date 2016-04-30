@@ -1,0 +1,45 @@
+<html ng-app="firebaseApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="./firebase_json_browser.js"></script>
+    <script type="text/ng-template" id="categoryTree">
+      <span ng-if="!checkTerminal(node.val) && node.show" ng-click="node.show=false"  style="cursor:pointer">- </span>
+      <span ng-if="!checkTerminal(node.val) && !node.show" ng-click="node.show=true"  style="cursor:pointer">+ </span>
+      <span ng-if="checkTerminal(node.val)">.&nbsp;</span>
+      <b>{{node.key}}:</b>
+      <span ng-if="checkTerminal(node.val) && !node.isLoading" 
+            ng-click="!node.isLeaf && loadData(node)" 
+            ng-style="node.isLeaf && {color : 'green'} || {color : 'blue', cursor:'pointer'}"> {{node.val}}</span>
+      <span ng-if="!checkTerminal(node.val) && !node.show && !node.isLoading" 
+            ng-style="{color : 'black'}"> {...}</span>
+      <img src="./loading.gif" ng-show="node.isLoading" width="40">
+      <ul 
+          ng-if="!checkTerminal(node.val) && node.show && !node.isLoading"
+          style="list-style-type:none">
+          <li ng-repeat="node in node.val" 
+              ng-include="'categoryTree'" 
+              onload="isTerminal=checkTerminal(node.val)">           
+          </li>
+      </ul>
+    </script>
+    <style>
+      ul {
+        list-style-type:none;
+        padding-left : 10px;
+        margin-left: 5px;
+      }
+    </style>
+    <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+  </head>
+  <body ng-controller="ctrl"
+        style="font-family:'Inconsolata'">
+    
+    <ul style="list-style-type:none">
+      <li ng-repeat="node in rootData" 
+          ng-include="'categoryTree'" 
+          onload="isTerminal=checkTerminal(node.val)"></li>
+    </ul>
+    
+  </body>
+</html>
