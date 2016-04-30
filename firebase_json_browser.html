@@ -1,5 +1,6 @@
 <html ng-app="firebaseApp">
   <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="./firebase_json_browser.js"></script>
@@ -14,14 +15,19 @@
             ng-style="node.isLeaf && {color : 'green'} || {color : 'blue', cursor:'pointer'}"> {{node.val}}</span>
       <span ng-if="!checkTerminal(node.val) && !node.show && !node.isLoading" 
             ng-style="{color : 'black'}"> {...}</span>
-      <img src="./loading.gif" ng-show="node.isLoading" width="40">
+<!--      <i class="fa fa-camera-retro fa-lg" ng-show="true"></i>-->
+      <i class="fa fa-spinner fa-spin" ng-show="node.isLoading"></i>
+      <i class="fa fa-database options" 
+         ng-show="hasClass(id, 'border', node)" 
+         style="cursor:pointer"></i>
       <ul 
           ng-if="!checkTerminal(node.val) && node.show && !node.isLoading">
           <li ng-repeat="node in node.val" 
-              ng-include="'categoryTree'" 
-              onload="isTerminal=checkTerminal(node.val)"
+              ng-include="'categoryTree'"
+              onload="isTerminal=checkTerminal(node.val); id=genId(node)"
               ng-mouseover="myMouseEnter($event); $event.stopPropagation()" 
-              ng-mouseleave="myMouseOut($event); $event.stopPropagation()"> 
+              ng-mouseleave="myMouseOut($event); $event.stopPropagation()"
+              ng-attr-id="{{genId(node)}}"> 
           </li>
       </ul>
     </script>
@@ -33,21 +39,27 @@
       }
       
       li.border {
-        /*border : solid 1px brown;*/
+        border : solid 1px brown;
         background-color: lightgoldenrodyellow;
       }
     </style>
     <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+    
+    <title>Firebase Lazy JSON Browser</title>
+    
   </head>
   <body ng-controller="ctrl"
         style="font-family:'Inconsolata'">
+    <h3>Firebase Lazy JSON Browser for {{BASE_URL}}</h3>
+    <h5 style="color:green">(Saves data &amp; time by loading only keys of location at a time)</h5>
     
     <ul>
       <li ng-repeat="node in rootData" 
           ng-include="'categoryTree'" 
-          onload="isTerminal=checkTerminal(node.val)"
+          onload="isTerminal=checkTerminal(node.val); id=genId(node)"
           ng-mouseover="myMouseEnter($event); $event.stopPropagation()" 
-          ng-mouseleave="myMouseOut($event); $event.stopPropagation()">
+          ng-mouseleave="myMouseOut($event); $event.stopPropagation()"
+          ng-attr-id="{{genId(node)}}">
       </li>
     </ul>
     

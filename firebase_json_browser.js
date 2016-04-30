@@ -1,6 +1,18 @@
 var app = angular.module('firebaseApp', []);
+
 app.controller('ctrl', ['$scope', function($scope){
   $scope.BASE_URL = "https://dev-preppo.firebaseio.com";
+  
+  $scope.genId = function(node){
+    return 'id' + node.url.replace(/\//g, '_') + 'id';
+  }
+  
+  $scope.hasClass = function(id, className, node){
+    console.log("hasClass() called with " + id + "|" + className);
+    var bordered = jQuery("#" + id).hasClass("border");
+    console.log("hasClass() bordered=" + bordered);
+    return bordered;
+  }
   
   $scope.log = function(x){
     //console.log(x);
@@ -8,7 +20,7 @@ app.controller('ctrl', ['$scope', function($scope){
   
   $scope.myMouseEnter = function(event){
     var obj = event.currentTarget; //event.target gives the child element
-    console.log("mouseenter " + jQuery("span:first", obj).html() + " " + obj.tagName);
+    //console.log("mouseenter " + jQuery("span:first", obj).html() + " " + obj.tagName);
     jQuery(obj).parents().removeClass('border');
     jQuery(obj).siblings().removeClass('border');
     jQuery(obj).addClass("border");
@@ -16,7 +28,7 @@ app.controller('ctrl', ['$scope', function($scope){
       
   $scope.myMouseOut = function(event){
     var obj = event.currentTarget;
-    console.log("mouseout " + jQuery("span:first", obj).html() + " " + obj.tagName);
+    //console.log("mouseout " + jQuery("span:first", obj).html() + " " + obj.tagName);
     jQuery(obj).removeClass("border");
   }
   
