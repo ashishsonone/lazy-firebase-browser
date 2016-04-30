@@ -1,7 +1,13 @@
 var app = angular.module('firebaseApp', []);
 
-app.controller('ctrl', ['$scope', function($scope){
+app.controller('ctrl', ['$scope', '$location', function($scope, $location){
   $scope.BASE_URL = "https://dev-preppo.firebaseio.com";
+  
+  console.log("%j", $location.search().target);
+  var target = $location.search().target;
+  if(target){
+    $scope.BASE_URL = "https://" + target + ".firebaseio.com";
+  }
   
   $scope.genId = function(node){
     return 'id' + node.url.replace(/\//g, '_') + 'id';
@@ -58,11 +64,13 @@ app.controller('ctrl', ['$scope', function($scope){
     $.ajax(shallowUrl, {
       success: function(data) {
         node.isLoading = false;
+        node.wasDeleted = false;
         console.log("GET success for url=" + shallowUrl);
         if($scope.checkTerminal(data)){ //NOT a dict or array
           console.log("replaced with a terminal value " + data);
           if(data == null){
             data = "<null>";
+            node.wasDeleted = true; //override since value is null
           }
           else if(typeof(data) === 'string'){
             data = '"' + data + '"';
