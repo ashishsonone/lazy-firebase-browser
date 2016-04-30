@@ -15,11 +15,13 @@
             ng-style="node.isLeaf && {color : 'green'} || {color : 'blue', cursor:'pointer'}"> {{node.val}}</span>
       <span ng-if="!checkTerminal(node.val) && !node.show && !node.isLoading" 
             ng-style="{color : 'black'}"> {...}</span>
-<!--      <i class="fa fa-camera-retro fa-lg" ng-show="true"></i>-->
       <i class="fa fa-spinner fa-spin" ng-show="node.isLoading"></i>
-      <i class="fa fa-database options" 
-         ng-show="hasClass(id, 'border', node)" 
-         style="cursor:pointer"></i>
+      <a ng-show="hasClass(id, 'border', node)" 
+         style="cursor:pointer"
+         href="{{BASE_URL}}{{node.url}}"
+         target="_blank">
+        <i class="fa fa-database" style="color:red"></i>
+      </a>
       <ul 
           ng-if="!checkTerminal(node.val) && node.show && !node.isLoading">
           <li ng-repeat="node in node.val" 
