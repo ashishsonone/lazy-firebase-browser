@@ -5,18 +5,18 @@ app.controller('ctrl', ['$scope', function($scope){
   
   $scope.genId = function(node){
     return 'id' + node.url.replace(/\//g, '_') + 'id';
-  }
+  };
   
   $scope.hasClass = function(id, className, node){
-    console.log("hasClass() called with " + id + "|" + className);
+    //console.log("hasClass() called with " + id + "|" + className);
     var bordered = jQuery("#" + id).hasClass("border");
-    console.log("hasClass() bordered=" + bordered);
+    //console.log("hasClass() bordered=" + bordered);
     return bordered;
-  }
+  };
   
   $scope.log = function(x){
     //console.log(x);
-  }
+  };
   
   $scope.myMouseEnter = function(event){
     var obj = event.currentTarget; //event.target gives the child element
@@ -24,20 +24,20 @@ app.controller('ctrl', ['$scope', function($scope){
     jQuery(obj).parents().removeClass('border');
     jQuery(obj).siblings().removeClass('border');
     jQuery(obj).addClass("border");
-  }
+  };
       
   $scope.myMouseOut = function(event){
     var obj = event.currentTarget;
     //console.log("mouseout " + jQuery("span:first", obj).html() + " " + obj.tagName);
     jQuery(obj).removeClass("border");
-  }
+  };
   
   $scope.checkTerminal = function(data){
     //consider null value as terminal
     return (data == null || typeof(data) === 'string' || typeof(data) === 'number' || typeof(data) === 'boolean');
-  }
+  };
   
-  $scope.moreIndicator = "<more>"
+  $scope.moreIndicator = "<more>";
 
   $scope.convert = function(data){
     var isTerminal= $scope.checkTerminal(data);
@@ -50,7 +50,7 @@ app.controller('ctrl', ['$scope', function($scope){
       arr.push({key : k, val : $scope.convert(data[k])});
     }
     return arr;
-  }
+  };
 
   $scope.loadData = function(node){
     var shallowUrl = $scope.BASE_URL + node.url + ".json" + "?shallow=true";
@@ -58,7 +58,7 @@ app.controller('ctrl', ['$scope', function($scope){
     $.ajax(shallowUrl, {
       success: function(data) {
         node.isLoading = false;
-        console.log("success for url=" + shallowUrl);
+        console.log("GET success for url=" + shallowUrl);
         if($scope.checkTerminal(data)){ //NOT a dict or array
           console.log("replaced with a terminal value " + data);
           if(data == null){
@@ -88,8 +88,33 @@ app.controller('ctrl', ['$scope', function($scope){
       },
       error: function() {
         node.isLoading = false;
-        console.log("error occured");
-        $('#notification').html('An error occurred');
+        console.log("GET error for url=" + shallowUrl);
+        $scope.$apply();
+      }
+    });
+  };
+  
+  $scope.deleteData = function(node){
+    if(node.delete !== 'yes'){
+      node.delete = '';
+      return;
+    }
+    var resourceUrl = $scope.BASE_URL + node.url + ".json";
+    node.isLoading = true;
+    $.ajax({
+      url : resourceUrl,
+      type : "DELETE",
+      success: function(data) {
+        node.isLoading = false;
+        console.log("DELETE success for url=" + resourceUrl);
+        node.val = "<null>";
+        node.isLeaf = true;
+        node.wasDeleted = true;
+        $scope.$apply();
+      },
+      error: function() {
+        node.isLoading = false;
+        console.log("DELETE error for url=" + resourceUrl);
         $scope.$apply();
       }
     });
