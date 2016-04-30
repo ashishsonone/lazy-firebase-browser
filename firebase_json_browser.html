@@ -4,8 +4,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="./firebase_json_browser.js"></script>
     <script type="text/ng-template" id="categoryTree">
-      <span ng-if="!checkTerminal(node.val) && node.show" ng-click="node.show=false"  style="cursor:pointer">- </span>
-      <span ng-if="!checkTerminal(node.val) && !node.show" ng-click="node.show=true"  style="cursor:pointer">+ </span>
+      <span ng-show="false">{{node.key}}</span>
+      <span ng-if="!checkTerminal(node.val) && node.show" ng-click="node.show=false"  style="cursor:pointer">-&nbsp;</span>
+      <span ng-if="!checkTerminal(node.val) && !node.show" ng-click="node.show=true"  style="cursor:pointer">+&nbsp;</span>
       <span ng-if="checkTerminal(node.val)">.&nbsp;</span>
       <b>{{node.key}}:</b>
       <span ng-if="checkTerminal(node.val) && !node.isLoading" 
@@ -15,11 +16,12 @@
             ng-style="{color : 'black'}"> {...}</span>
       <img src="./loading.gif" ng-show="node.isLoading" width="40">
       <ul 
-          ng-if="!checkTerminal(node.val) && node.show && !node.isLoading"
-          style="list-style-type:none">
+          ng-if="!checkTerminal(node.val) && node.show && !node.isLoading">
           <li ng-repeat="node in node.val" 
               ng-include="'categoryTree'" 
-              onload="isTerminal=checkTerminal(node.val)">           
+              onload="isTerminal=checkTerminal(node.val)"
+              ng-mouseover="myMouseEnter($event); $event.stopPropagation()" 
+              ng-mouseleave="myMouseOut($event); $event.stopPropagation()"> 
           </li>
       </ul>
     </script>
@@ -29,16 +31,24 @@
         padding-left : 10px;
         margin-left: 5px;
       }
+      
+      li.border {
+        /*border : solid 1px brown;*/
+        background-color: lightgoldenrodyellow;
+      }
     </style>
     <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
   </head>
   <body ng-controller="ctrl"
         style="font-family:'Inconsolata'">
     
-    <ul style="list-style-type:none">
+    <ul>
       <li ng-repeat="node in rootData" 
           ng-include="'categoryTree'" 
-          onload="isTerminal=checkTerminal(node.val)"></li>
+          onload="isTerminal=checkTerminal(node.val)"
+          ng-mouseover="myMouseEnter($event); $event.stopPropagation()" 
+          ng-mouseleave="myMouseOut($event); $event.stopPropagation()">
+      </li>
     </ul>
     
   </body>

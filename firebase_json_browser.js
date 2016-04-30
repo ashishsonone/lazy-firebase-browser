@@ -1,6 +1,24 @@
 var app = angular.module('firebaseApp', []);
 app.controller('ctrl', ['$scope', function($scope){
-  $scope.BASE_URL = "https://shining-inferno-4918.firebaseio.com";
+  $scope.BASE_URL = "https://dev-preppo.firebaseio.com";
+  
+  $scope.log = function(x){
+    //console.log(x);
+  }
+  
+  $scope.myMouseEnter = function(event){
+    var obj = event.currentTarget; //event.target gives the child element
+    console.log("mouseenter " + jQuery("span:first", obj).html() + " " + obj.tagName);
+    jQuery(obj).parents().removeClass('border');
+    jQuery(obj).siblings().removeClass('border');
+    jQuery(obj).addClass("border");
+  }
+      
+  $scope.myMouseOut = function(event){
+    var obj = event.currentTarget;
+    console.log("mouseout " + jQuery("span:first", obj).html() + " " + obj.tagName);
+    jQuery(obj).removeClass("border");
+  }
   
   $scope.checkTerminal = function(data){
     //consider null value as terminal
