@@ -1,0 +1,4 @@
+On hover, provide following options:
+- refresh node option
+- delete node option
+- open in firebase option
