@@ -1,4 +1,6 @@
 On hover, provide following options:
 - refresh node option
-- delete node option
-- open in firebase option
+(x) delete node option
+(x) open in firebase option
+
+Firebase auth ??
