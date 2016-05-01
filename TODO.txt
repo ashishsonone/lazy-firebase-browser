@@ -3,8 +3,8 @@ On hover, provide following options:
 (x) delete node option
 (x) open in firebase option
 
-Firebase auth:(using 'crypto-js' : both node-js & browser)
-- Store 'encrypted' admin access token in angular script, one for each of your firebase databases
-- Require a secret to be passed in url query to decrypt it into actual token
-- This decrypted auth token will then be used in all REST api calls to firebase
-- If no secret provided or accessing some other firebase database, simple api calls will be made without an auth token
+(x) Firebase auth:(using 'crypto-js' : both node-js & browser)
+    - Store 'encrypted' admin access token in angular script, one for each of your firebase databases
+    - Require a secret to be passed in url query to decrypt it into actual token
+    - This decrypted auth token will then be used in all REST api calls to firebase
+    - If no secret provided or accessing some other firebase database, simple api calls will be made without an auth token
