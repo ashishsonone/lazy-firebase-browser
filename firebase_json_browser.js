@@ -1,13 +1,57 @@
 var app = angular.module('firebaseApp', []);
 
 app.controller('ctrl', ['$scope', '$location', function($scope, $location){
-  $scope.BASE_URL = "https://dev-preppo.firebaseio.com";
+  /* start config */
+  var defaultFirebaseDB = 'shining-inferno-4918';
   
-  console.log("%j", $location.search().target);
-  var target = $location.search().target;
-  if(target){
-    $scope.BASE_URL = "https://" + target + ".firebaseio.com";
+  //auth enabled firebase databases
+  $scope.authEnabledDatabaseMap = {
+    'shining-inferno-4918' : 'U2FsdGVkX1+9IzYDVmNaiU4u89S3AopuqldPExCY/SyTwQcjdwtwQ3cOmqIlL14pXo8ItMpVt0Wq/+O/IsK/KRuOGpYNHfckLBBuAgwx3E2C5CEJbO0UY28CIWvh1AyeaCJgrsYclpv1x94dgESkaZp9ZViwLoXZa6h95uqINmDNgBInl+/krJ6YDtExls6ZY/+Y2aLOTGVEo9fmLt07ZZhVfMupzE1Edk+fc7N43YM2RtW9XKz1JKZc6IbPfMRUMIhbCbM+mBkQhaSM1UGs9/A3/W0RkicxvOETUCcDvGM='
+  };
+  
+  $scope.authEnabledDatabaseList = [];
+  for(var k in $scope.authEnabledDatabaseMap){
+    $scope.authEnabledDatabaseList.push(k);
   }
+  /* end config */
+  
+  var firebaseDB = defaultFirebaseDB;
+  
+  console.log("location.search() %j", $location.search());
+  
+  var target = $location.search().target;
+  var key = $location.search().key;
+  
+  if(target){
+    firebaseDB = target;
+  }
+  
+  $scope.showInstructions = true;
+  $scope.BASE_URL = "https://" + firebaseDB + ".firebaseio.com";
+  $scope.authPart = ''; //auth query part in firebase REST calls : e.g /animals/cat.json?auth=<TOKEN>
+  $scope.errorMessage = "";
+  
+  if(key && $scope.authEnabledDatabaseMap[firebaseDB]){
+    //cipher key provided, and token present in map
+    var cipheredToken = $scope.authEnabledDatabaseMap[firebaseDB];
+    
+    // Decrypt
+    try{
+      var bytes  = CryptoJS.AES.decrypt(cipheredToken, key);
+      var token = bytes.toString(CryptoJS.enc.Utf8);
+      console.log("auth token set to " + token);
+      $scope.authPart = 'auth=' + token;
+    }
+    catch(e){
+      $scope.errorMessage = "Invalid key to decipher the auth token";      
+    }
+  }
+  else{
+    console.log("no auth token set");
+  }
+  
+  console.log("BASE_URL |" + $scope.BASE_URL + "|");
+  console.log("authPart |" + $scope.authPart + "|");
   
   $scope.genId = function(node){
     return 'id' + node.url.replace(/\//g, '_') + 'id';
@@ -59,10 +103,11 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
   };
 
   $scope.loadData = function(node){
-    var shallowUrl = $scope.BASE_URL + node.url + ".json" + "?shallow=true";
+    var shallowUrl = $scope.BASE_URL + node.url + ".json" + "?shallow=true" + $scope.authPart;
     node.isLoading = true;
+    $scope.errorMessage = "";
     $.ajax(shallowUrl, {
-      success: function(data) {
+      success: function(data, textStatus, xhr) {
         node.isLoading = false;
         node.wasDeleted = false;
         console.log("GET success for url=" + shallowUrl);
@@ -94,9 +139,10 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
         node.show = true;
         $scope.$apply();
       },
-      error: function() {
+      error: function(xhr, textStatus, err) {
         node.isLoading = false;
-        console.log("GET error for url=" + shallowUrl);
+        console.log("GET error for url=" + shallowUrl + " status=" + xhr.status + ":"+ xhr.statusText);
+        $scope.errorMessage = "GET error status " + xhr.status + ":"+ xhr.statusText;
         $scope.$apply();
       }
     });
@@ -107,12 +153,13 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
       node.delete = '';
       return;
     }
-    var resourceUrl = $scope.BASE_URL + node.url + ".json";
+    var resourceUrl = $scope.BASE_URL + node.url + ".json" + "?" + $scope.authPart;
     node.isLoading = true;
+    $scope.errorMessage = "";
     $.ajax({
       url : resourceUrl,
       type : "DELETE",
-      success: function(data) {
+      success: function(data, textStatus, xhr) {
         node.isLoading = false;
         console.log("DELETE success for url=" + resourceUrl);
         node.val = "<null>";
@@ -120,9 +167,10 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
         node.wasDeleted = true;
         $scope.$apply();
       },
-      error: function() {
+      error: function(xhr, textStatus, err) {
         node.isLoading = false;
-        console.log("DELETE error for url=" + resourceUrl);
+        console.log("DELETE error for url=" + resourceUrl + " status=" + xhr.status + ":"+ xhr.statusText);
+        $scope.errorMessage = "DELETE error status " + xhr.status + ":"+ xhr.statusText;
         $scope.$apply();
       }
     });
