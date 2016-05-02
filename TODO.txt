@@ -1,5 +1,5 @@
 On hover, provide following options:
-- refresh node option
+(x) refresh node option
 (x) delete node option
 (x) open in firebase option
 
@@ -8,3 +8,6 @@ On hover, provide following options:
     - Require a secret to be passed in url query to decrypt it into actual token
     - This decrypted auth token will then be used in all REST api calls to firebase
     - If no secret provided or accessing some other firebase database, simple api calls will be made without an auth token
+    
+( ) At user's own risk, deep loading of node i.e with all data (it may blow or freeze page if a lot of data in it - resulting in a lot of dom elements)
+( ) Clean(simplify) & Optimize the angular code - find out why slower than firebase's ui?

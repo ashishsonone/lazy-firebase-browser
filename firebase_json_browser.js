@@ -110,6 +110,7 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
       success: function(data, textStatus, xhr) {
         node.isLoading = false;
         node.wasDeleted = false;
+        node.isLeaf = false;
         console.log("GET success for url=" + shallowUrl);
         if($scope.checkTerminal(data)){ //NOT a dict or array
           console.log("replaced with a terminal value " + data);
