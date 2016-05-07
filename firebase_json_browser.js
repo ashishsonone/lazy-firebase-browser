@@ -107,9 +107,8 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
   
   //updates the node itself, returns nothing
   $scope.convertDeepNode = function(node){
-    //console.log("node.key=" + node.key);
-    var isTerminal= $scope.checkTerminal(node.val);
-    if(isTerminal){
+    node.isTerminal= $scope.checkTerminal(node.val);
+    if(node.isTerminal){
       node.isLeaf = true;
       $scope.prettifyTerminalNode(node);
       return;
@@ -129,7 +128,8 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
   };
   
   $scope.convertShallowNode = function(node){
-    if($scope.checkTerminal(node.val)){ //NOT a dict or array
+    node.isTerminal = $scope.checkTerminal(node.val);
+    if(node.isTerminal){ //NOT a dict or array
       console.log("replaced with a terminal value " + node.val);
       $scope.prettifyTerminalNode(node);
       node.isLeaf = true;
@@ -139,7 +139,10 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
       var count = 0;
       for(var key in node.val){
         //console.log("pushing " + k);
-        dataArray.push({key : key, val : $scope.moreIndicator, url : node.url + key + "/", isLeaf : false});
+        var newNode = {key : key, val : $scope.moreIndicator, url : node.url + key + "/", isLeaf : false};
+        newNode.isTerminal = true;
+        
+        dataArray.push(newNode);
         count++;
       }
       console.log("pushed " + count + " children");
@@ -163,7 +166,7 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
       success: function(data, textStatus, xhr) {
         node.isLoading = false;
         node.wasDeleted = false;
-        node.isLeaf = false;
+        
         console.log("GET success for url=" + shallowUrl);
         node.val = data;
         if(isDeep){
@@ -199,9 +202,12 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
       success: function(data, textStatus, xhr) {
         node.isLoading = false;
         console.log("DELETE success for url=" + resourceUrl);
-        node.val = "<null>";
+        node.val = null;
+        $scope.prettifyTerminalNode(node);
         node.isLeaf = true;
         node.wasDeleted = true;
+        
+        node.isTerminal = true;
         $scope.$apply();
       },
       error: function(xhr, textStatus, err) {
@@ -213,6 +219,6 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
     });
   };
 
-  $scope.rootData = [{key : "Root", val : $scope.moreIndicator, url : "/", isLeaf : false}];
+  $scope.rootData = [{key : "Root", val : $scope.moreIndicator, url : "/", isLeaf : false, isTerminal : true}];
   sample = $scope.rootData;
 }]);

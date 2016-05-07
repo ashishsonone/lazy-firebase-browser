@@ -6,15 +6,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="./firebase_json_browser.js"></script>
     <script type="text/ng-template" id="categoryTree">
-      <span ng-show="false">{{node.key}}</span>
-      <span ng-if="!checkTerminal(node.val) && node.show" ng-click="node.show=false"  style="cursor:pointer">-&nbsp;</span>
-      <span ng-if="!checkTerminal(node.val) && !node.show" ng-click="node.show=true"  style="cursor:pointer">+&nbsp;</span>
-      <span ng-if="checkTerminal(node.val)">.&nbsp;</span>
+      <span ng-show="false">hi{{node.isTerminal}}</span>
+      <span ng-if="!node.isTerminal && node.show" ng-click="node.show=false"  style="cursor:pointer">-&nbsp;</span>
+      <span ng-if="!node.isTerminal && !node.show" ng-click="node.show=true"  style="cursor:pointer">+&nbsp;</span>
+      <span ng-if="node.isTerminal">.&nbsp;</span>
       <b>{{node.key}}:</b>
-      <span ng-if="checkTerminal(node.val) && !node.isLoading" 
+      <span ng-if="node.isTerminal && !node.isLoading" 
             ng-click="!node.isLeaf && loadData(node, $event.shiftKey)" 
             ng-style="node.isLeaf && {color : 'green'} || {color : 'blue', cursor:'pointer'}"> {{node.val}}</span>
-      <span ng-if="!checkTerminal(node.val) && !node.show && !node.isLoading" 
+      <span ng-if="!node.isTerminal && !node.show && !node.isLoading" 
             ng-style="{color : 'black'}"> {...}</span>
       
       <i class="fa fa-spinner fa-spin" ng-show="node.isLoading"></i>
@@ -43,10 +43,10 @@
                ng-model=node.delete>
       </span>
       <ul 
-          ng-if="!checkTerminal(node.val) && node.show && !node.isLoading">
+          ng-if="!node.isTerminal && node.show && !node.isLoading">
           <li ng-repeat="node in node.val" 
               ng-include="'categoryTree'"
-              onload="isTerminal=checkTerminal(node.val); id=genId(node)"
+              onload="id=genId(node)"
               ng-mouseover="myMouseEnter($event); $event.stopPropagation()" 
               ng-mouseleave="myMouseOut($event); $event.stopPropagation()"
               ng-attr-id="{{genId(node)}}"> 
@@ -95,7 +95,7 @@
     <ul>
       <li ng-repeat="node in rootData" 
           ng-include="'categoryTree'" 
-          onload="isTerminal=checkTerminal(node.val); id=genId(node)"
+          onload="id=genId(node)"
           ng-mouseover="myMouseEnter($event); $event.stopPropagation()" 
           ng-mouseleave="myMouseOut($event); $event.stopPropagation()"
           ng-attr-id="{{genId(node)}}">
