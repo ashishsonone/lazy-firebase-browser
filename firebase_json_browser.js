@@ -26,7 +26,7 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
     firebaseDB = target;
   }
   
-  $scope.showInstructions = true;
+  $scope.showInstructions = false;
   $scope.BASE_URL = "https://" + firebaseDB + ".firebaseio.com";
   $scope.authPart = ''; //auth query part in firebase REST calls : e.g /animals/cat.json?auth=<TOKEN>
   $scope.errorMessage = "";
@@ -89,21 +89,74 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
   
   $scope.moreIndicator = "<more>";
 
-  $scope.convert = function(data){
-    var isTerminal= $scope.checkTerminal(data);
-    if(isTerminal) return data;
-
-    var arr = [];
-    var key;
-    var val;
-    for(k in data){
-      arr.push({key : k, val : $scope.convert(data[k])});
+  //update the node itself, returns nothing
+  $scope.prettifyTerminalNode = function(node){
+    var data = node.val;
+    if(data == null){
+      node.val = "<null>";
+      node.wasDeleted = true; //override since value is null
     }
-    return arr;
+    else if(typeof(data) === 'string'){
+      node.val = '"' + data + '"';
+    }
+    else{
+      //nothing to do in case of number and boolean
+      node.val = data;
+    }
+  };
+  
+  //updates the node itself, returns nothing
+  $scope.convertDeepNode = function(node){
+    //console.log("node.key=" + node.key);
+    var isTerminal= $scope.checkTerminal(node.val);
+    if(isTerminal){
+      node.isLeaf = true;
+      $scope.prettifyTerminalNode(node);
+      return;
+    }
+
+    //convert recusively
+    var dataArray = [];
+    for(key in node.val){
+      var newNode = {key : key, val : node.val[key], url : node.url + key + "/"};
+      $scope.convertDeepNode(newNode);
+      dataArray.push(newNode);//isLeaf not set
+    }
+    
+    //set the fields of this node
+    node.val = dataArray;
+    node.isLeaf = false;
+  };
+  
+  $scope.convertShallowNode = function(node){
+    if($scope.checkTerminal(node.val)){ //NOT a dict or array
+      console.log("replaced with a terminal value " + node.val);
+      $scope.prettifyTerminalNode(node);
+      node.isLeaf = true;
+    }
+    else{
+      var dataArray = [];
+      var count = 0;
+      for(var key in node.val){
+        //console.log("pushing " + k);
+        dataArray.push({key : key, val : $scope.moreIndicator, url : node.url + key + "/", isLeaf : false});
+        count++;
+      }
+      console.log("pushed " + count + " children");
+      node.val = dataArray;
+      node.isLeaf = false;
+    }
   };
 
-  $scope.loadData = function(node){
-    var shallowUrl = $scope.BASE_URL + node.url + ".json" + "?shallow=true" + $scope.authPart;
+  $scope.loadData = function(node, isDeep){
+    var shallowUrl;
+    if(isDeep){
+      shallowUrl = $scope.BASE_URL + node.url + ".json" + "?" + $scope.authPart;
+    }
+    else{
+      shallowUrl = $scope.BASE_URL + node.url + ".json" + "?" + "shallow=true" + $scope.authPart;
+    }
+    
     node.isLoading = true;
     $scope.errorMessage = "";
     $.ajax(shallowUrl, {
@@ -112,32 +165,15 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
         node.wasDeleted = false;
         node.isLeaf = false;
         console.log("GET success for url=" + shallowUrl);
-        if($scope.checkTerminal(data)){ //NOT a dict or array
-          console.log("replaced with a terminal value " + data);
-          if(data == null){
-            data = "<null>";
-            node.wasDeleted = true; //override since value is null
-          }
-          else if(typeof(data) === 'string'){
-            data = '"' + data + '"';
-          }
-          //nothing to do in case of number and boolean
-          node.val = data;
-          node.isLeaf = true;
+        node.val = data;
+        if(isDeep){
+          $scope.convertDeepNode(node);
         }
         else{
-          var dataArray = [];
-          var count = 0;
-          for(var key in data){
-            //console.log("pushing " + k);
-            dataArray.push({key : key, val : $scope.moreIndicator, url : node.url + key + "/", isLeaf : false});
-            count++;
-          }
-          console.log("pushed " + count + " children");
-          node.val = dataArray;
+          $scope.convertShallowNode(node);
         }
         
-        node.show = true;
+        node.show = true; //expand immediately
         $scope.$apply();
       },
       error: function(xhr, textStatus, err) {
