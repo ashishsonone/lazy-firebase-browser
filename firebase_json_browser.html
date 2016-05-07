@@ -7,8 +7,8 @@
     <script src="./firebase_json_browser.js"></script>
     <script type="text/ng-template" id="categoryTree">
       <span ng-show="false">hi{{node.isTerminal}}</span>
-      <span ng-if="!node.isTerminal && node.show" ng-click="node.show=false"  style="cursor:pointer">-&nbsp;</span>
-      <span ng-if="!node.isTerminal && !node.show" ng-click="node.show=true"  style="cursor:pointer">+&nbsp;</span>
+      <span ng-if="!node.isTerminal && node.show" ng-click="expand(false, node, $event.shiftKey)"  style="cursor:pointer">-&nbsp;</span>
+      <span ng-if="!node.isTerminal && !node.show" ng-click="expand(true, node, $event.shiftKey)"  style="cursor:pointer">+&nbsp;</span>
       <span ng-if="node.isTerminal">.&nbsp;</span>
       <b>{{node.key}}:</b>
       <span ng-if="node.isTerminal && !node.isLoading" 
@@ -89,6 +89,7 @@
       <h5 style="color:violet">- Example full url with database name as well as auth key : <span style="color:brown">http://localhost:8001/firebase_json_browser.html#?target=shining-inferno-4918&amp;key=gabru</span></h5>
       <h5 style="color:blue">- To load next level of data at firebase node, [click] on &lt;more&gt; button or on <i class="fa fa-refresh" style="color:black"></i> icon</h5>
       <h5 style="color:blue">- To load all of data (deep) at firebase node, [SHIFT + click] on &lt;more&gt; button or <i class="fa fa-refresh" style="color:black"></i> icon</h5>
+      <h5 style="color:navy">- To fold/unfold next level of a node's children (with data already loaded), [click] on the <span style="color:black">(-)/(+)</span> respectively. Use [SHIFT + click] to fold/unfold the whole tree iteratively at the node</h5>
       <h5 style="color:orange">- To open a node location in Firebase, hover over it, click on orange <i class="fa fa-database" style="color:orange"></i> icon</h5>
       <h5 style="color:red">- To delete a node location, hover over it, type 'yes' in text box, click on <i class="fa fa-times" style="color:red"></i> icon</h5>
     </div>

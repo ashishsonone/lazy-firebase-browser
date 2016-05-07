@@ -82,6 +82,16 @@ app.controller('ctrl', ['$scope', '$location', function($scope, $location){
     jQuery(obj).removeClass("border");
   };
   
+  $scope.expand = function(show, node, deep){
+    node.show = show;
+    if(deep && !node.isTerminal){
+      for(var k in node.val){
+        var childNode = node.val[k];
+        $scope.expand(show, childNode, true);
+      }
+    }
+  }
+  
   $scope.checkTerminal = function(data){
     //consider null value as terminal
     return (data == null || typeof(data) === 'string' || typeof(data) === 'number' || typeof(data) === 'boolean');
