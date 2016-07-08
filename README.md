@@ -2,6 +2,10 @@
 Lazy way to browse your large firebase database (using firebase rest api)
 As of now, its quite usable with all the necessary options for browsing the database one can think of (except edit/add a node which I think is not that important since this is just meant for browsing)
 
+How to use it:
+  Just open the `firebase_json_browser.html` file in your browser
+  Rest of the instructions are right there within the page
+  
 Features:
   - Load next level of data at a node(starts with root node)
   - Refresh the data at a node
