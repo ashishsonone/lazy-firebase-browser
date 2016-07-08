@@ -10,5 +10,6 @@ On hover, provide following options:
     - If no secret provided or accessing some other firebase database, simple api calls will be made without an auth token
     
 (x) At user's own risk, deep loading of node i.e with all data
+(x) Fold & unfold recursive (deep)
 ( ) Clean(simplify) & Optimize the angular code - find out why slower than firebase's ui?
 ( ) Long list pagination
